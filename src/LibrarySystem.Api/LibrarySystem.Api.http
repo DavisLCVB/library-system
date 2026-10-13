@@ -1,0 +1,6 @@
+@LibrarySystem.Api_HostAddress = http://localhost:5111
+
+GET {{LibrarySystem.Api_HostAddress}}/api/categories
+Accept: application/json
+
+###
