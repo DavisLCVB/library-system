@@ -1,6 +1,7 @@
 using LibrarySystem.Application.Categories;
 using LibrarySystem.Infrastructure.Persistence;
 using LibrarySystem.Infrastructure.Persistence.Repositories;
+using LibrarySystem.Infrastructure.Persistence.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        bool seedSampleData = false
     )
     {
         var connectionString =
@@ -19,7 +21,14 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 "Connection String 'LibraryDb' is not configured."
             );
-        services.AddDbContext<LibraryDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<LibraryDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString);
+            if (seedSampleData)
+            {
+                options.UseSeeding(LibraryDbSeeder.Seed).UseAsyncSeeding(LibraryDbSeeder.SeedAsync);
+            }
+        });
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         return services;
     }
