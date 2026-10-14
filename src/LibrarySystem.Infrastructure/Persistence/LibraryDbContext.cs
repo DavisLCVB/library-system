@@ -7,6 +7,8 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
 {
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Book> Books => Set<Book>();
+    public DbSet<Author> Authors => Set<Author>();
+    public DbSet<BookCopy> BookCopies => Set<BookCopy>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

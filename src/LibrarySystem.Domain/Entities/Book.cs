@@ -8,4 +8,6 @@ public class Book
     public int PublishedYear { get; set; }
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
+    public ICollection<Author> Authors { get; set; } = [];
+    public ICollection<BookCopy> Copies { get; set; } = [];
 }

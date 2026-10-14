@@ -21,6 +21,43 @@ namespace LibrarySystem.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BookAuthors", b =>
+                {
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AuthorId", "BookId");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("BookAuthors");
+                });
+
+            modelBuilder.Entity("LibrarySystem.Domain.Entities.Author", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Nationality")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Authors");
+                });
+
             modelBuilder.Entity("LibrarySystem.Domain.Entities.Book", b =>
                 {
                     b.Property<int>("Id")
@@ -55,6 +92,37 @@ namespace LibrarySystem.Infrastructure.Persistence.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("LibrarySystem.Domain.Entities.BookCopy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("InventoryCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("InventoryCode")
+                        .IsUnique();
+
+                    b.ToTable("BookCopies");
+                });
+
             modelBuilder.Entity("LibrarySystem.Domain.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -76,6 +144,21 @@ namespace LibrarySystem.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BookAuthors", b =>
+                {
+                    b.HasOne("LibrarySystem.Domain.Entities.Author", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibrarySystem.Domain.Entities.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LibrarySystem.Domain.Entities.Book", b =>
                 {
                     b.HasOne("LibrarySystem.Domain.Entities.Category", "Category")
@@ -85,6 +168,22 @@ namespace LibrarySystem.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("LibrarySystem.Domain.Entities.BookCopy", b =>
+                {
+                    b.HasOne("LibrarySystem.Domain.Entities.Book", "Book")
+                        .WithMany("Copies")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+                });
+
+            modelBuilder.Entity("LibrarySystem.Domain.Entities.Book", b =>
+                {
+                    b.Navigation("Copies");
                 });
 
             modelBuilder.Entity("LibrarySystem.Domain.Entities.Category", b =>

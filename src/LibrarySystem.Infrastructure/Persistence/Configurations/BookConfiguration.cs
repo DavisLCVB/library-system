@@ -18,5 +18,14 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .WithMany(c => c.Books)
             .HasForeignKey(b => b.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasMany(b => b.Authors)
+            .WithMany(a => a.Books)
+            .UsingEntity<Dictionary<string, object>>(
+                "BookAuthors",
+                j => j.HasOne<Author>().WithMany().HasForeignKey("AuthorId"),
+                j => j.HasOne<Book>().WithMany().HasForeignKey("BookId")
+            );
     }
 }
