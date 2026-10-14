@@ -31,4 +31,22 @@ public class CategoriesController(CategoryService categoryService) : ControllerB
         var category = await categoryService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
     }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(
+        int id,
+        UpdateCategoryRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        await categoryService.UpdateAsync(id, request, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        await categoryService.DeleteAsync(id, cancellationToken);
+        return NoContent();
+    }
 }

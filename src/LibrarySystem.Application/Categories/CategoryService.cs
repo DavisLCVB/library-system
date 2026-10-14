@@ -32,7 +32,11 @@ public class CategoryService(ICategoryRepository repository, IUnitOfWork unitOfW
     )
     {
         var category = new Category { Name = request.Name.Trim() };
-        if (await repository.ExistsByNameAsync(category.Name, cancellationToken))
+        if (await repository.ExistsByNameAsync(
+                category.Name,
+                cancellationToken: cancellationToken
+            )
+        )
         {
             throw new ConflictException($"Category with name '{category.Name}' already exists.");
         }
@@ -43,8 +47,43 @@ public class CategoryService(ICategoryRepository repository, IUnitOfWork unitOfW
 
     private static CategoryDto ToDto(Category category) => new(category.Id, category.Name);
 
-    public async Task<bool> ExistsByNameAsync(
-        string name,
+    public async Task UpdateAsync(
+        int id,
+        UpdateCategoryRequest request,
         CancellationToken cancellationToken = default
-    ) => await repository.ExistsByNameAsync(name, cancellationToken);
+    )
+    {
+        var category =
+            await repository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Category), id);
+
+        var newName = request.Name.Trim();
+        if (
+            category.Name != newName
+            && await repository.ExistsByNameAsync(newName, id, cancellationToken)
+        )
+        {
+            throw new ConflictException($"Category with name '{newName}' already exists.");
+        }
+
+        category.Name = newName;
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var category =
+            await repository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Category), id);
+
+        if (await repository.HasBookAsync(id, cancellationToken))
+        {
+            throw new ConflictException(
+                $"Cannot delete category '{category.Name}' because it has associated books."
+            );
+        }
+
+        repository.Remove(category);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }
