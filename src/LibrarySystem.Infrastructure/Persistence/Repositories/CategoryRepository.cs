@@ -9,4 +9,9 @@ public class CategoryRepository(LibraryDbContext db) : ICategoryRepository
     public async Task<IReadOnlyList<Category>> GetAllAsync(
         CancellationToken cancellationToken = default
     ) => await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync(cancellationToken);
+
+    public async Task<Category?> GetByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default
+    ) => await db.Categories.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 }

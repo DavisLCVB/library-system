@@ -14,4 +14,10 @@ public class CategoriesController(CategoryService categoryService) : ControllerB
         var categories = await categoryService.GetAllAsync(cancellationToken);
         return Ok(categories);
     }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<CategoryDto>> GetById(
+        int id,
+        CancellationToken cancellationToken
+    ) => Ok(await categoryService.GetByIdAsync(id, cancellationToken));
 }
