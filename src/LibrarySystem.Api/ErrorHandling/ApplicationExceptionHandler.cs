@@ -16,6 +16,7 @@ public class ApplicationExceptionHandler(IProblemDetailsService problemDetailsSe
         int? status = exception switch
         {
             NotFoundException => StatusCodes.Status404NotFound,
+            ConflictException => StatusCodes.Status409Conflict,
             _ => null,
         };
         if (status is null)

@@ -1,4 +1,5 @@
 using LibrarySystem.Application.Categories;
+using LibrarySystem.Application.Common.Persistence;
 using LibrarySystem.Infrastructure.Persistence;
 using LibrarySystem.Infrastructure.Persistence.Repositories;
 using LibrarySystem.Infrastructure.Persistence.Seeding;
@@ -30,6 +31,7 @@ public static class DependencyInjection
             }
         });
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<LibraryDbContext>());
         return services;
     }
 }

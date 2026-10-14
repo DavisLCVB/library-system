@@ -14,4 +14,11 @@ public class CategoryRepository(LibraryDbContext db) : ICategoryRepository
         int id,
         CancellationToken cancellationToken = default
     ) => await db.Categories.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+    public void Add(Category category) => db.Categories.Add(category);
+
+    public async Task<bool> ExistsByNameAsync(
+        string name,
+        CancellationToken cancellationToken = default
+    ) => await db.Categories.AnyAsync(c => c.Name == name, cancellationToken);
 }
